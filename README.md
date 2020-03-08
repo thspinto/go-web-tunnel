@@ -1,4 +1,5 @@
 # Go Web Tunnel
+![Go](https://github.com/thspinto/go-web-tunnel/workflows/Go/badge.svg)
 
 Go Web Tunnel is a reverse tunnel for proxying webhook to your localhost.
 
