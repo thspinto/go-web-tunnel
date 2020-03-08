@@ -16,6 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -26,16 +28,45 @@ var completionCmd = &cobra.Command{
 	Long:  `Generate auto complete setting for your shell.`,
 }
 
+// bashCmd represents the bash command
+var bashCmd = &cobra.Command{
+	Use:   "bash",
+	Short: "Generate bash completion",
+	Long: `This command will generate a Bash script for enable the go-web-tunnel autocompletion.
+	Make sure that you have https://github.com/scop/bash-completion properly installed.
+	You can verify by running type _init_completion.
+	If the previus command succeeds, you're already set, otherwise click the above link and follow the installation guide.
+
+	Now add the completion script genereted by running go-web-tunnel completion bash in your /etc/bash_completion.d
+	running the following command:
+		$ sudo sh -c  "go-web-tunnel completion bash > /etc/bash_completion.d/go-web-tunnel" "
+	`,
+	Run: func(cmd *cobra.Command, args []string) {
+		rootCmd.GenBashCompletion(os.Stdout)
+	},
+}
+
+// zshCmd represents the zsh command
+var zshCmd = &cobra.Command{
+	Use:   "zsh",
+	Short: "Generate zsh completion",
+	Long: `This command will generate a Zash script for enable the go-web-tunnel autocompletion.
+	The go-web-tunnel completion script for Zsh can be generated with this command.
+	Sourcing the completion script in your shell will enable go-web-tunnel autocompletion.
+	To do so in all your shell sessions, add the following to your ~/.zshrc
+		$ sudo sh -c "go-web-tunnel completion zsh > /usr/local/share/zsh/site-functions/_go-web-tunnel"  \
+		&& echo "autoload -U compinit && compinit" >> ~/.zshrc
+
+		$ source ~/.zshrc
+
+	`,
+	Run: func(cmd *cobra.Command, args []string) {
+		rootCmd.GenZshCompletion(os.Stdout)
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(completionCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// completionCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// completionCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	completionCmd.AddCommand(bashCmd)
+	completionCmd.AddCommand(zshCmd)
 }

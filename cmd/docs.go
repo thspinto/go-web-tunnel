@@ -16,31 +16,66 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 )
+
+var outputDir string
 
 // docsCmd represents the docs command
 var docsCmd = &cobra.Command{
-	Use:   "docs",
+	Use:   "docs [docs type]",
 	Short: "Generate docs",
 	Long:  `Generate docs for the go-web-tunnel application.`,
+}
+
+var genMarkDownCmd = &cobra.Command{
+	Use:   "markdown",
+	Short: "Generate markdown docs",
+	Long:  `Generate markdown docs for the go-web-tunnel application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("docs called")
+		err := doc.GenMarkdownTree(rootCmd, outputDir)
+		if err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+var genManCmd = &cobra.Command{
+	Use:   "man",
+	Short: "Generate man pages",
+	Long:  `Generate Man pages for the go-web-tunnel application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		header := &doc.GenManHeader{
+			Title:   "go-web-tunnel",
+			Section: "1",
+		}
+		err := doc.GenManTree(rootCmd, header, outputDir)
+		if err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+var genReSTCmd = &cobra.Command{
+	Use:   "rest",
+	Short: "Generate ReST docs",
+	Long:  `Generate ReStructured text docs for the go-web-tunnel application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := doc.GenReSTTree(rootCmd, outputDir)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(docsCmd)
+	docsCmd.PersistentFlags().StringVarP(&outputDir, "outputDir", "o", ".", "output directory")
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// docsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// docsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	docsCmd.AddCommand(genMarkDownCmd)
+	docsCmd.AddCommand(genManCmd)
+	docsCmd.AddCommand(genReSTCmd)
 }
